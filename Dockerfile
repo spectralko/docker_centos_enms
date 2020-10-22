@@ -1,14 +1,12 @@
-FROM centos:centos7
+FROM centos:centos8
 
-RUN yum update -y && yum install -y \
+RUN dnf -y install \
       epel-release \
       git \
-      python3 \
-      python3-pip \
-      ansible  && \
+      python3-pip && \
       pip3 install --upgrade pip && \
-      yum clean all && \
-      rm -rf /var/lib/yum/*
+      dnf clean all && \
+      rm -rf /var/cache/dnf/ && rm -rf /var/lib/dnf/
 
 RUN git clone https://github.com/afourmy/eNMS.git
 WORKDIR /eNMS
@@ -22,6 +20,6 @@ RUN mkdir network_data && \
 RUN sed -i 's/"end_port": 9100/"end_port": 9001/g' /eNMS/setup/settings.json && \
     export FLASK_APP=app.py
 
-CMD export LC_ALL=en_US.utf8 && flask run --host=0.0.0.0
+CMD flask run --host=0.0.0.0
 
 EXPOSE 5000 9000
